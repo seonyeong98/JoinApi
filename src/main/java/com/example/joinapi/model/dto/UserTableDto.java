@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,12 +20,12 @@ public class UserTableDto {
     private String email;
     private String pnu;
     private String gender;
-    private LocalDateTime birth;
+    private LocalDate birth;
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
 
-    public UserTableDto(Integer id, String userId, String userPw, String name, String email, String pnu, String gender, LocalDateTime birth, LocalDateTime joinDt, LocalDateTime lastLoginDt, LocalDateTime updateDt) {
+    public UserTableDto(Integer id, String userId, String userPw, String name, String email, String pnu, String gender, LocalDate birth, LocalDateTime joinDt, LocalDateTime lastLoginDt, LocalDateTime updateDt) {
         this.id = id;
         this.userId = userId;
         this.userPw = userPw;

@@ -2,6 +2,7 @@ package com.example.joinapi.model.dto;
 
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,7 +14,7 @@ public class PostsResponseDto {
     private String email;
     private String pnu;
     private String gender;
-    private LocalDateTime birth;
+    private LocalDate birth;
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;

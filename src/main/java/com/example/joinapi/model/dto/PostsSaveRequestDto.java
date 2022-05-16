@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,7 +17,7 @@ public class PostsSaveRequestDto {
     private String email;
     private String pnu;
     private String gender;
-    private LocalDateTime birth;
+    private LocalDate birth;
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;

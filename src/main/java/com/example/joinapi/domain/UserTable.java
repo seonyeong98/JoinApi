@@ -1,11 +1,16 @@
 package com.example.joinapi.domain;
 
+import com.example.joinapi.model.dto.UserTableDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Objects;
 
 @Getter
@@ -15,7 +20,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name="usertable")
-public class UserTable {
+public class UserTable /* implements UserDetails */{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +45,7 @@ public class UserTable {
     private String gender;
 
     @Column(name = "birth")
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     @CreationTimestamp //INSERT 시 자동으로 값을 채워줌
     @Column(name = "join_dt")
@@ -53,6 +58,7 @@ public class UserTable {
     @UpdateTimestamp
     @Column(name = "update_dt")
     private LocalDateTime updateDt = LocalDateTime.now();
+
 
     @Override
     public int hashCode() {
@@ -86,7 +92,7 @@ public class UserTable {
         return gender;
     }
 
-    public LocalDateTime getBirth() {
+    public LocalDate getBirth() {
         return birth;
     }
 
@@ -101,5 +107,6 @@ public class UserTable {
     public LocalDateTime getLastLoginDt() {
         return lastLoginDt;
     }
+
 }
 
