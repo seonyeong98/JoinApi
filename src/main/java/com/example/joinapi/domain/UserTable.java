@@ -1,20 +1,20 @@
 package com.example.joinapi.domain;
 
-import com.example.joinapi.model.dto.UserTableDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Objects;
 
 @Getter
 @Setter
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,6 +27,7 @@ public class UserTable /* implements UserDetails */{
     private Integer id;
 
     @Column(name = "user_id")
+
     private String userId;
 
     @Column(name = "user_pw")

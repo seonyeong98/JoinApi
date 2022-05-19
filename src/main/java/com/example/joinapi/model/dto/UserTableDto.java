@@ -1,17 +1,25 @@
 package com.example.joinapi.model.dto;
 
+import com.example.joinapi.config.Authority;
 import com.example.joinapi.domain.UserTable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @ToString
 public class UserTableDto {
+
+
 
     private Integer id;
     private String userId;
@@ -24,6 +32,9 @@ public class UserTableDto {
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
+
+    private Collection<SimpleGrantedAuthority> authorities;
+
 
     public UserTableDto(Integer id, String userId, String userPw, String name, String email, String pnu, String gender, LocalDate birth, LocalDateTime joinDt, LocalDateTime lastLoginDt, LocalDateTime updateDt) {
         this.id = id;

@@ -7,13 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 
 @Slf4j
@@ -22,19 +28,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-//    private JwtUserDetailService jwtUserDetailService;
-//    private JwtRequestFilter jwtRequestFilter;
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Autowired
-//    SecurityConfig(JwtUserDetailsService jwtUserDetailsService, JwtRequestFilter jwtRequestFilter, PasswordEncoder passwordEncoder) {
-//        this.jwtUserDetailService = jwtUserDetailsService;
-//        this.jwtRequestFilter = jwtRequestFilter;
-//        this.passwordEncoder = passwordEncoder;
-//    }
-//    @Autowired
-//    private JwtAuthenticationProvider jwtAuthenticationProvider
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private JwtUserDetailsService jwtUserDetailsService;
+    private JwtRequestFilter jwtRequestFilter;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
+    // AuthenticationManagerBuilder의 passwordEncoder()를 통해
+    // 패스워드 암호화에 사용될 PasswordEncoder 구현체를 지정할 수 있습니다.
+    @Override
+    protected void configure(AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -55,18 +71,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable().headers().frameOptions().disable();
     }
 
-
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*");
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE"));
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+
     }
 
-
+    //비밀번호 암호화를 위한 Encoder설정
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-
 
 }

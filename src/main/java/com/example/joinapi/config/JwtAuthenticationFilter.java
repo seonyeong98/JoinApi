@@ -9,23 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtAuthenticationFilter { /* extends OncePerRequestFilter {
+public class JwtAuthenticationFilter{
 
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
-
-    public JwtAuthenticationFilter(JwtAuthenticationProvider provider) {
-        jwtAuthenticationProvider = provider;
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain) throws ServletException, IOException {
-        String token = jwtAuthenticationProvider.resolveToken(request);
-
-        if(token != null && jwtAuthenticationProvider.validateToken(token)) {
-            Authentication authentication = jwtAuthenticationProvider.getAuthentication(token);
-        }
-        filterChain.doFilter(request, response);
-    }
-
- */
 }

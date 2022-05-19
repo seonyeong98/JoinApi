@@ -5,21 +5,17 @@ import com.example.joinapi.model.dto.UserTableDto;
 import com.example.joinapi.repository.UserTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserTableService {
 
+    @Autowired
     private final UserTableRepository userTableRepository;
-    private final UserTableService userTableService;
 
 //    public List<UserTableDto> existsByUserId(String userId) {
 //        List<UserTableDto> list = collectionMap(userTableRepository.existsByUserId(userId), UserTableDto.class);
@@ -38,7 +34,7 @@ public class UserTableService {
         System.out.println(user.toString());
 
         Integer id = user.getId();
-        Optional<UserTable> entity = userTableRepository.findById(id);
+        Optional<UserTable> entity = userTableRepository.findById(String.valueOf(id));
         if(entity.isPresent()) {
             UserTable selectEntity = entity.get();
             selectEntity.setUserId(user.getUserId());
@@ -62,7 +58,7 @@ public class UserTableService {
     public void deleteForm(Integer id) {
         System.out.println(id);
 
-        Optional<UserTable> entity = userTableRepository.findById(id);
+        Optional<UserTable> entity = userTableRepository.findById(String.valueOf(id));
         if(entity.isPresent()) {
             userTableRepository.delete(entity.get());
         } else {
@@ -71,9 +67,12 @@ public class UserTableService {
 
     }
 
+
     public Optional<UserTable> findByIdPw(Integer id) {
-        return userTableRepository.findById(id);
+        return userTableRepository.findByUserId(String.valueOf(id));
     }
+
+
 
     //중복 Id 체크
 //    @Transactional
@@ -84,20 +83,28 @@ public class UserTableService {
 //
 //            return modelMapper.map(userTableRepository.save(user), UserTableDto.Response.class);
 //        }
-    public boolean isExistsLoginId(String userId) {
+    public Optional<UserTable> findByIdPw(String id) {
+        return userTableRepository.findById(id);
+    }
+
+    public boolean isExistsUserId(String userId) {
         return userTableRepository.existsByUserId(userId);
     }
 
-//사용자 아이디 존재여부
-public boolean isExistsUserId(String userId) {
-    boolean isMemberExist = userTableRepository.existsByUserId(userId);
-    boolean isMemberAccountsExist = userTableService.isExistsLoginId(userId);
-    if(isMemberExist || isMemberAccountsExist) {
-        return true;
-    } else {
-        return false;
+    public boolean isExistsEmail(String email) {
+        return userTableRepository.existsByEmail(email);
     }
-}
+
+//사용자 아이디 존재여부
+//public boolean isExistsUserId(String userId) {
+//    boolean isMemberExist = userTableRepository.existsByUserId(userId);
+//    boolean isMemberAccountsExist = userTableService.isExistsLoginId(userId);
+//    if(isMemberExist || isMemberAccountsExist) {
+//        return true;
+//    } else {
+//        return false;
+//    }
+//}
 //
 //    public boolean isExistsLoginId(String loginId) {
 //        return
