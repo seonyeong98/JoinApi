@@ -71,9 +71,6 @@ public class UserTableApiController {
 
 
 
-
-
-
     @PostMapping("/logout")
     public void logout(HttpServletResponse response){
         Cookie cookie = new Cookie("X-AUTH-TOKEN", null);
