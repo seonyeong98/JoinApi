@@ -1,27 +1,33 @@
 package com.example.joinapi.controller;
 
-import com.example.joinapi.config.JwtRequestFilter;
-import com.example.joinapi.config.SessionUser;
+import com.example.joinapi.config.*;
 import com.example.joinapi.domain.UserTable;
+import com.example.joinapi.model.dto.PostsResponseDto;
+import com.example.joinapi.model.dto.PostsSaveRequestDto;
 import com.example.joinapi.model.dto.ResponseResult;
 import com.example.joinapi.model.dto.UserTableDto;
 import com.example.joinapi.repository.UserTableRepository;
 import com.example.joinapi.service.UserTableService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.ToString;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
+@Controller
 @RequiredArgsConstructor
 @ResponseBody
 @RestController
+@ToString
 @RequestMapping("/api")
 public class UserTableApiController {
     //컨트롤러에서 서비스를 부르고 서비스에서 레포지터리 불러오기
@@ -30,15 +36,18 @@ public class UserTableApiController {
     private final JwtRequestFilter jwtRequestFilter;
     private final UserTableService userTableService;
     private final UserTableRepository userTableRepository;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUserDetailsService jWtUserDetailsService;
+
 
 
     //중복체크 API
-    @GetMapping("userid-exist/{userId}")
+    @GetMapping("/userid-exist/{userId}")
         public ResponseEntity<ResponseResult> idCheck(@PathVariable String userId) {
             return ResponseEntity.ok(ResponseResult.of(userTableService.isExistsUserId(userId)));
         }
 
-    @GetMapping("user-emails/{email}")
+    @GetMapping("/user-emails/{email}")
         public ResponseEntity<ResponseResult> emailCheck(@PathVariable String email) {
         return ResponseEntity.ok(ResponseResult.of(userTableService.isExistsEmail(email)));
     }
@@ -59,15 +68,48 @@ public class UserTableApiController {
         userTableService.createForm(user);
     }
 
-
+    @Transactional
     @PostMapping("/login")
-    public String login(@RequestBody UserTable user) {
-        User member = userTableRepository.findByUserId(user.getUserId("userId"))
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디 입니다."));
-        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다."); }
-        return jwtRequestFilter.createToken(member.getuserId(), member.getRoles());
+    public ResponseEntity<JwtResponse> login(@RequestBody PostsResponseDto user) {
+        String userId = user.getUserId();
+        //UserDetails userDetails = jWtUserDetailsService.loadUserByUsername(userId);
+        Optional<UserTable> member = userTableRepository.findByUserId(userId);
+        if (member.isPresent()) {
+            String passwd = member.get().getUserPw();
+            if (!passwordEncoder.matches(user.getUserPw(), passwd)) {
+                throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            }
+            final String token = jwtTokenUtil.generateToken(userId);
+            return ResponseEntity.ok(new JwtResponse(token));
+        } else {
+            throw new IllegalArgumentException("가입되지 않은 아이디 입니다.");
+        }
+        //        final String token = jwtTokenUtil.generateToken(member.getUserId());
+        //        return ResponseEntity.ok(new JwtResponse(token));
     }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody Map<String, String> PostsResponseDto) {
+//        PostsResponseDto member = userTableRepository.findByIdPw("userId")
+//                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+//        if (!passwordEncoder.matches(member.getUserPw(), member.getUserPw())) {
+//            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+//        }
+//
+//        final String token = jwtTokenUtil.generateToken(member.getUserId());
+//        return ResponseEntity.ok(new JwtResponse(token));
+//    }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<?> createAuthenticationToken(
+//            HttpServletRequest request, HttpServletResponse response,
+//            @RequestBody JwtRequest jwtRequest) throws Exception {
+//        authenticate(request, response, jwtRequest.getUserId(), jwtRequest.getUserPw());
+//        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUserId());
+//        final String token = jwtTokenUtil.generateToken(userDetails);
+//        return ResponseEntity.ok(new JwtResponse(token));
+//    }
+
 
 
 
@@ -109,9 +151,9 @@ public class UserTableApiController {
 //    }
 //
     @PostMapping("/join")
-    public String createForm(@RequestBody UserTable user) {
-        System.out.println(user.toString());
-        userTableService.createForm(user);
+    public String createForm(@RequestBody PostsSaveRequestDto postsSaveRequestDto) {
+        System.out.println(postsSaveRequestDto.toString());
+        userTableService.createForm(postsSaveRequestDto);
 
         return "saved";
     }
@@ -136,6 +178,22 @@ public class UserTableApiController {
 //        return "deleted";
 //    }
 
+
+    @Data
+    class JwtRequest {
+
+        private String userId;
+        private String userPw;
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    class JwtResponse {
+
+        private String token;
+
+    }
 
 
 }

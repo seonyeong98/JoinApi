@@ -5,9 +5,12 @@ import com.example.joinapi.model.dto.UserTableDto;
 import com.example.joinapi.repository.UserTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,7 +27,6 @@ public class UserTableService {
 
     @Transactional
     public void createForm(UserTable user) {
-
         System.out.println(user.toString());
         userTableRepository.save(user);
     }
@@ -53,7 +55,6 @@ public class UserTableService {
         }
     }
 
-
     @Transactional
     public void deleteForm(Integer id) {
         System.out.println(id);
@@ -68,12 +69,6 @@ public class UserTableService {
     }
 
 
-    public Optional<UserTable> findByIdPw(Integer id) {
-        return userTableRepository.findByUserId(String.valueOf(id));
-    }
-
-
-
     //중복 Id 체크
 //    @Transactional
 //    public UserTableDto.Response userTable(UserTableDto.Request request) {
@@ -83,9 +78,7 @@ public class UserTableService {
 //
 //            return modelMapper.map(userTableRepository.save(user), UserTableDto.Response.class);
 //        }
-    public Optional<UserTable> findByIdPw(String id) {
-        return userTableRepository.findById(id);
-    }
+
 
     public boolean isExistsUserId(String userId) {
         return userTableRepository.existsByUserId(userId);

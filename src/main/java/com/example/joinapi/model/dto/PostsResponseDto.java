@@ -1,9 +1,14 @@
 package com.example.joinapi.model.dto;
 
+import com.example.joinapi.domain.UserTable;
+import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 
 @Getter
 public class PostsResponseDto {
@@ -18,4 +23,83 @@ public class PostsResponseDto {
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
+
+    @Builder
+    public PostsResponseDto(UserTable entity) {
+        this.id = entity.getId();
+        this.userId = entity.getUserId();
+        this.userPw = entity.getUserPw();
+        this.name = entity.getName();
+        this.email = entity.getEmail();
+        this.pnu = entity.getPnu();
+        this.gender = entity.getGender();
+        this.birth = entity.getBirth();
+        this.joinDt = entity.getJoinDt();
+        this.lastLoginDt = entity.getLastLoginDt();
+        this.updateDt = entity.getUpdateDt();
+    }
+
+    public UserTable toEntity() {
+        return UserTable.builder()
+                .id(id)
+                .userId(userId)
+                .userPw(userPw)
+                .name(name)
+                .email(email)
+                .pnu(pnu)
+                .gender(gender)
+                .birth(birth)
+                .joinDt(joinDt)
+                .lastLoginDt(LocalDateTime.now())
+                .updateDt(LocalDateTime.now())
+                .build();
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, userPw, name, email, pnu, gender, birth, joinDt, updateDt, lastLoginDt);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getUserPw() {
+        return userPw;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPnu() {
+        return pnu;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public LocalDate getBirth() {
+        return birth;
+    }
+
+    public LocalDateTime getJoinDt() {
+        return joinDt;
+    }
+
+    public LocalDateTime getUpdateDt() {
+        return updateDt;
+    }
+
+    public LocalDateTime getLastLoginDt() {
+        return lastLoginDt;
+    }
+
 }
+

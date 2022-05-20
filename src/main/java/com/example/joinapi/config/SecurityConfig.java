@@ -1,6 +1,7 @@
 
 package com.example.joinapi.config;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +26,15 @@ import java.util.Arrays;
 @Slf4j
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private JwtUserDetailsService jwtUserDetailsService;
     private JwtRequestFilter jwtRequestFilter;
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    //@Autowired
+    //private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
     // AuthenticationManagerBuilder의 passwordEncoder()를 통해
     // 패스워드 암호화에 사용될 PasswordEncoder 구현체를 지정할 수 있습니다.
@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests() //요청에 따른 권한 체크 설정 부분 /auth/** 경로로 들어오는 부분은 인증이 필요없고, 그 외 모든 요청들은 인증을 거치도록 설정
-                .antMatchers("/", "/login", "/api/join").permitAll()
+                .antMatchers("/", "/api/login", "/api/join").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

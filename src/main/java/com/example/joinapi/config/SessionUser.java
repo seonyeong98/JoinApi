@@ -1,6 +1,7 @@
 package com.example.joinapi.config;
 
 import com.example.joinapi.domain.UserTable;
+import com.example.joinapi.model.dto.PostsResponseDto;
 import lombok.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -37,12 +38,12 @@ public class SessionUser  {
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
 
-    public static SessionUser of(UserTable userTable) {
+    public static SessionUser of(UserTable user) {
         return new SessionUser(
-                userTable.getId(), userTable.getUserId(), userTable.getUserPw(),
-                userTable.getName(), userTable.getEmail(), userTable.getPnu(),
-                userTable.getGender(), userTable.getBirth(), userTable.getJoinDt(),
-                userTable.getLastLoginDt(), userTable.getUpdateDt() );
+                user.getId(), user.getUserId(), user.getUserPw(),
+                user.getName(), user.getEmail(), user.getPnu(),
+                user.getGender(), user.getBirth(), user.getJoinDt(),
+                user.getLastLoginDt(), user.getUpdateDt() );
     }
 
     @Builder

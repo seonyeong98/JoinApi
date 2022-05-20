@@ -20,14 +20,13 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name="usertable")
-public class UserTable /* implements UserDetails */{
+public class UserTable extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "user_id")
-
     private String userId;
 
     @Column(name = "user_pw")
