@@ -1,11 +1,13 @@
 package com.example.joinapi.config;
 
+import com.example.joinapi.model.dto.PostsSaveRequestDto;
 import com.example.joinapi.repository.UserTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Signature;
@@ -26,5 +28,10 @@ public class SecurityService  implements UserDetailsService {
          */
     }
 
+    public SecurityService(UserTableRepository userTableRepository){
+        this.userTableRepository = userTableRepository;
+    }
+
     //public Optional<User> findByIdPw(String userId) { return userTableRepository.findByUserID(userId); }
+
 }

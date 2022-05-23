@@ -1,11 +1,17 @@
 package com.example.joinapi.service;
 
+import com.example.joinapi.config.JwtTokenUtil;
+import com.example.joinapi.controller.UserTableApiController;
 import com.example.joinapi.domain.UserTable;
+import com.example.joinapi.model.dto.PostsResponseDto;
+import com.example.joinapi.model.dto.PostsSaveRequestDto;
 import com.example.joinapi.model.dto.UserTableDto;
 import com.example.joinapi.repository.UserTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +23,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserTableService {
 
-    @Autowired
+    private final PasswordEncoder passwordEncoder;
     private final UserTableRepository userTableRepository;
+    private final JwtTokenUtil jwtTokenUtil;
 
 //    public List<UserTableDto> existsByUserId(String userId) {
 //        List<UserTableDto> list = collectionMap(userTableRepository.existsByUserId(userId), UserTableDto.class);
@@ -26,15 +33,24 @@ public class UserTableService {
 //    }
 
     @Transactional
-    public void createForm(UserTable user) {
-        System.out.println(user.toString());
-        userTableRepository.save(user);
+    public void createForm(PostsSaveRequestDto postsSaveRequestDto) {
+
+        String rawPassword = postsSaveRequestDto.getUserPw();
+        String encPassword = passwordEncoder.encode(rawPassword);
+        System.out.println("@@@@@@@@@@@@@");
+        System.out.println(encPassword);
+        postsSaveRequestDto.setUserPw(encPassword);
+        //String a = postsSaveRequestDto.toString();
+        System.out.println(postsSaveRequestDto.toString());
+        userTableRepository.save(postsSaveRequestDto.toEntity());
+
+        //UserTable saved = userTableRepository.save(postsSaveRequestDto.toEntity());
+        //return saved.getId();
     }
 
     @Transactional
     public void updateForm(UserTableDto user) {
         System.out.println(user.toString());
-
         Integer id = user.getId();
         Optional<UserTable> entity = userTableRepository.findById(String.valueOf(id));
         if(entity.isPresent()) {
@@ -58,15 +74,39 @@ public class UserTableService {
     @Transactional
     public void deleteForm(Integer id) {
         System.out.println(id);
-
         Optional<UserTable> entity = userTableRepository.findById(String.valueOf(id));
         if(entity.isPresent()) {
             userTableRepository.delete(entity.get());
         } else {
             System.out.println("데이터가 존재하지 않습니다." + id);
         }
-
     }
+
+    public String getToken(PostsResponseDto user) {
+        String userId = user.getUserId();
+        Boolean result = this.isPasswordMatch(user);
+        if (result) {
+            return jwtTokenUtil.generateToken(userId);
+        } else {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+    }
+
+
+    public Boolean isPasswordMatch(PostsResponseDto user) {
+        String userId = user.getUserId();
+        //UserDetails userDetails = jWtUserDetailsService.loadUserByUsername(userId);
+        Optional<UserTable> member = userTableRepository.findByUserId(userId);
+        if (member.isPresent()) {
+            String passwd = member.get().getUserPw();
+            return passwordEncoder.matches(user.getUserPw(), passwd);
+        } else {
+            throw new IllegalArgumentException("가입되지 않은 아이디 입니다.");
+        }
+    }
+
+
+
 
 
     //중복 Id 체크

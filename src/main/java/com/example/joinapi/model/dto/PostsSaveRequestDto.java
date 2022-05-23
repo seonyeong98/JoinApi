@@ -1,15 +1,17 @@
 package com.example.joinapi.model.dto;
 
 import com.example.joinapi.domain.UserTable;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.apache.tomcat.jni.Local;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class PostsSaveRequestDto {
     private String userId;
     private String userPw;
@@ -21,6 +23,7 @@ public class PostsSaveRequestDto {
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
+
 
     @Builder
     public PostsSaveRequestDto(UserTable entity) {
@@ -45,11 +48,13 @@ public class PostsSaveRequestDto {
                 .pnu(pnu)
                 .gender(gender)
                 .birth(birth)
-                .joinDt(joinDt)
+                .joinDt(LocalDateTime.now())
                 .lastLoginDt(LocalDateTime.now())
                 .updateDt(LocalDateTime.now())
                 .build();
 
     }
+
+
 }
 

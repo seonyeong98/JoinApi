@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,11 +33,10 @@ import java.util.Optional;
 public class UserTableApiController {
     //컨트롤러에서 서비스를 부르고 서비스에서 레포지터리 불러오기
 
-    private final PasswordEncoder passwordEncoder;
+
     private final JwtRequestFilter jwtRequestFilter;
     private final UserTableService userTableService;
     private final UserTableRepository userTableRepository;
-    private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService jWtUserDetailsService;
 
 
@@ -52,66 +52,20 @@ public class UserTableApiController {
         return ResponseEntity.ok(ResponseResult.of(userTableService.isExistsEmail(email)));
     }
 
+    @PostMapping("/join")
+    public String createForm(@RequestBody PostsSaveRequestDto postsSaveRequestDto) {
+        userTableService.createForm(postsSaveRequestDto);
+        return "saved";
 
-    @PostMapping("/join2")
-    public void join(@RequestBody UserTableDto dto) {
-        UserTable user = UserTable.builder()
-                .userId(dto.getUserId())
-                .userPw(dto.getUserPw())
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .pnu(dto.getPnu())
-                .gender(dto.getGender())
-                .birth(dto.getBirth())
-                //.roles(Collections.singletonList("ROLE_USER"))
-                .build();
-        userTableService.createForm(user);
     }
+
 
     @Transactional
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody PostsResponseDto user) {
-        String userId = user.getUserId();
-        //UserDetails userDetails = jWtUserDetailsService.loadUserByUsername(userId);
-        Optional<UserTable> member = userTableRepository.findByUserId(userId);
-        if (member.isPresent()) {
-            String passwd = member.get().getUserPw();
-            if (!passwordEncoder.matches(user.getUserPw(), passwd)) {
-                throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-            }
-            final String token = jwtTokenUtil.generateToken(userId);
-            return ResponseEntity.ok(new JwtResponse(token));
-        } else {
-            throw new IllegalArgumentException("가입되지 않은 아이디 입니다.");
-        }
-        //        final String token = jwtTokenUtil.generateToken(member.getUserId());
-        //        return ResponseEntity.ok(new JwtResponse(token));
+        String token = userTableService.getToken(user);
+        return ResponseEntity.ok(new UserTableApiController.JwtResponse(token));
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody Map<String, String> PostsResponseDto) {
-//        PostsResponseDto member = userTableRepository.findByIdPw("userId")
-//                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
-//        if (!passwordEncoder.matches(member.getUserPw(), member.getUserPw())) {
-//            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-//        }
-//
-//        final String token = jwtTokenUtil.generateToken(member.getUserId());
-//        return ResponseEntity.ok(new JwtResponse(token));
-//    }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> createAuthenticationToken(
-//            HttpServletRequest request, HttpServletResponse response,
-//            @RequestBody JwtRequest jwtRequest) throws Exception {
-//        authenticate(request, response, jwtRequest.getUserId(), jwtRequest.getUserPw());
-//        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUserId());
-//        final String token = jwtTokenUtil.generateToken(userDetails);
-//        return ResponseEntity.ok(new JwtResponse(token));
-//    }
-
-
-
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response){
@@ -138,32 +92,17 @@ public class UserTableApiController {
         List<UserTable> entity = userTableRepository.findAll();
         return ResponseEntity.ok(entity);
     }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserTable> findById(@PathVariable Integer id) {
-//        Optional<UserTable> entity = userTableRepository.findById(id);
-//        return ResponseEntity.ok(entity.get());
-//    }
-//
-//    @GetMapping("/posts/save")
-//    public String postsSave(){
-//        return "save";
-//    }
-//
-    @PostMapping("/join")
-    public String createForm(@RequestBody PostsSaveRequestDto postsSaveRequestDto) {
-        System.out.println(postsSaveRequestDto.toString());
-        userTableService.createForm(postsSaveRequestDto);
 
+
+
+    @PatchMapping("/update")
+    public String updateForm(@RequestBody UserTableDto user) {
+        System.out.println(user.toString());
+        userTableService.updateForm(user);
         return "saved";
     }
-//
-//    @PatchMapping("/update")
-//    public String updateForm(@RequestBody UserTableDto user) {
-//        System.out.println(user.toString());
-//        userTableService.updateForm(user);
-//        return "saved";
-//    }
+
+
 //    @PatchMapping("/info-update")
 //    public ResponseEntity updateMyInfo(@Valid @RequestBody MyInfoUpdateRequestDto updateRequest) throws RuntimeException {
 //        memberService.updateMyInfo(updateRequest);

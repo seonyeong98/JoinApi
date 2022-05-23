@@ -1,8 +1,8 @@
 package com.example.joinapi.model.dto;
 
 import com.example.joinapi.domain.UserTable;
-import lombok.Builder;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
@@ -11,6 +11,8 @@ import java.util.Objects;
 
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class PostsResponseDto {
     private Integer id;
     private String userId;
@@ -23,6 +25,12 @@ public class PostsResponseDto {
     private LocalDateTime joinDt;
     private LocalDateTime lastLoginDt;
     private LocalDateTime updateDt;
+
+    /*
+    빈생성자 (@NoArgsConstructor)
+    public PostsResponseDto() {
+    }
+    */
 
     @Builder
     public PostsResponseDto(UserTable entity) {
@@ -38,6 +46,7 @@ public class PostsResponseDto {
         this.lastLoginDt = entity.getLastLoginDt();
         this.updateDt = entity.getUpdateDt();
     }
+
 
     public UserTable toEntity() {
         return UserTable.builder()
