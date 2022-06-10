@@ -1,5 +1,6 @@
 package com.example.joinapi.notice.service;
 
+import com.example.joinapi.file.model.dto.GetInfoDto;
 import com.example.joinapi.login.jwt.config.JwtTokenUtil;
 import com.example.joinapi.file.domain.UploadFile;
 import com.example.joinapi.notice.domain.UserTable;
@@ -57,7 +58,7 @@ public class UserTableService {
     }
 
     @Transactional
-    public Map<String, Object> update(Integer id, PostUpdateRequestDto postUpdateRequestDto) throws Exception {
+    public Map<String, Object> update(Integer id, PostUpdateRequestDto postUpdateRequestDto) {
         UserTable userTable = userTableRepository.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다." + id));
         PostFileUploadDto file = postUpdateRequestDto.getFileInfo();

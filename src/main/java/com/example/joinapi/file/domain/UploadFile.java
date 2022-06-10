@@ -34,4 +34,8 @@ public class UploadFile implements Serializable {
     @Column(name = "file_type")
     private String fileType;
 
+
+
 }
+
+

@@ -1,15 +1,12 @@
 package com.example.joinapi.notice.controller;
 
-import com.example.joinapi.file.domain.UploadFile;
-import com.example.joinapi.file.model.dto.FileResponseDto;
+import com.example.joinapi.file.model.dto.GetInfoDto;
 import com.example.joinapi.login.jwt.config.JwtRequestFilter;
 import com.example.joinapi.login.jwt.service.JwtUserDetailsService;
 import com.example.joinapi.notice.model.dto.*;
 import com.example.joinapi.notice.repository.UserTableRepository;
 import com.example.joinapi.file.service.FileUploadService;
 import com.example.joinapi.notice.service.UserTableService;
-import com.example.joinapi.file.utils.DownloadUtil;
-import com.example.joinapi.file.utils.UploadUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,12 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 
@@ -41,21 +33,18 @@ public class UserTableApiController {
     @Value("${file.path}")
     private String file_path;
 
-
-
     private final JwtRequestFilter jwtRequestFilter;
     private final UserTableService userTableService;
     private final UserTableRepository userTableRepository;
     private final JwtUserDetailsService jWtUserDetailsService;
     private final FileUploadService fileUploadService;
 
-
-
     @GetMapping("/info/{id}")
     public void getInfo(@PathVariable Integer id,@RequestBody GetInfoDto getInfoDto) throws Exception{
         userTableService.getInfo(id, getInfoDto);
     }
 
+    /**회원 정보 수정 API*/
     @PatchMapping("/update/{id}")
     //@JsonProperty("postUpdateRequestDto")
     //JSON형태로 받아온 데이터를 @RequestBody를 통해 PostUpdateRequestDto 객체로 바꿔준다
@@ -65,6 +54,7 @@ public class UserTableApiController {
         return userTableService.update(id, postUpdateRequestDto);
     }
 
+    /**회원가입 API*/
     @PostMapping("/join")
     public String createForm(@RequestBody PostsSaveRequestDto postsSaveRequestDto) {
         userTableService.createForm(postsSaveRequestDto);
@@ -86,13 +76,15 @@ public class UserTableApiController {
         return "changeSuccess";
     }
 
-    //@Transactional
+    /**로그인 API*/
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody PostsResponseDto user) {
         String token = userTableService.getToken(user);
         SelectUserInfoDto info = userTableService.findByUserId(user.getUserId());
         return ResponseEntity.ok(new UserTableApiController.JwtResponse(token, info));
     }
+
+    /**회원 정보 삭제 API*/
     @DeleteMapping("/delete/{id}")
     public String deleteForm(@PathVariable("id") Integer id) {
         System.out.println(id);

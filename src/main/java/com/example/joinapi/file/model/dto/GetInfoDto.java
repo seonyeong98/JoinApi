@@ -1,8 +1,9 @@
-package com.example.joinapi.notice.model.dto;
+package com.example.joinapi.file.model.dto;
 
 import lombok.Getter;
 
 import java.time.LocalDate;
+
 @Getter
 public class GetInfoDto {
     private String name;

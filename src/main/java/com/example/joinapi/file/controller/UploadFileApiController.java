@@ -3,7 +3,6 @@ package com.example.joinapi.file.controller;
 import com.example.joinapi.file.domain.UploadFile;
 import com.example.joinapi.file.model.dto.FileResponseDto;
 import com.example.joinapi.file.service.FileUploadService;
-import com.example.joinapi.notice.model.dto.GetInfoDto;
 import com.example.joinapi.notice.repository.UserTableRepository;
 import com.example.joinapi.notice.service.UserTableService;
 import com.example.joinapi.file.utils.DownloadUtil;
